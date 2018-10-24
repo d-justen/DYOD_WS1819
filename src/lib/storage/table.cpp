@@ -25,7 +25,7 @@ void Table::add_column(const std::string& name, const std::string& type) {
     _chunks.push_back(std::make_shared<Chunk>());
   }
 
-  for (size_t i=0; i<_chunks.size(); i++) {
+  for (size_t i=0; i < _chunks.size(); i++) {
     _chunks[i]->add_segment(make_shared_by_data_type<BaseSegment, ValueSegment>(type));
   }
 }
@@ -33,14 +33,13 @@ void Table::add_column(const std::string& name, const std::string& type) {
 void Table::append(std::vector<AllTypeVariant> values) {
   if (_chunks.back()->size() < _max_chunk_size) {
     _chunks.back()->append(values);
-  }
-  else {
+  } else {
     auto chunk = std::make_shared<Chunk>();
-    
+
     for (size_t i = 0; i < values.size(); i++) {
       chunk->add_segment(make_shared_by_data_type<BaseSegment, ValueSegment>(_column_types[i]));
     }
-    
+
     chunk->append(values);
     _chunks.push_back(chunk);
   }

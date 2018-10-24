@@ -20,7 +20,7 @@ void Chunk::add_segment(std::shared_ptr<BaseSegment> segment) {
 
 void Chunk::append(const std::vector<AllTypeVariant>& values) {
   DebugAssert(values.size() == _segments.size(), "Value count doesn't match.");
-  for (size_t i = 0; i<_segments.size(); i++) {
+  for (size_t i = 0; i < _segments.size(); i++) {
     _segments[i]->append(values[i]);
   }
 }
