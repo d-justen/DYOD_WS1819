@@ -10,7 +10,8 @@
 namespace opossum {
 
 StorageManager& StorageManager::get() {
-  return *(new StorageManager());
+  static StorageManager instance;
+  return instance;
   // A really hacky fix to get the tests to run - replace this with your implementation
 }
 
