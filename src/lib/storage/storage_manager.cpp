@@ -1,6 +1,7 @@
 #include "storage_manager.hpp"
 
 #include <memory>
+#include <numeric>
 #include <string>
 #include <utility>
 #include <vector>
@@ -10,38 +11,53 @@
 namespace opossum {
 
 StorageManager& StorageManager::get() {
-  return *(new StorageManager());
-  // A really hacky fix to get the tests to run - replace this with your implementation
+  static StorageManager storage_manager;
+  return storage_manager;
 }
 
 void StorageManager::add_table(const std::string& name, std::shared_ptr<Table> table) {
-  // Implementation goes here
+  _tables[name] = table;
+  std::string s;
+  std::vector<std::string> test = table_names();
+  s = accumulate(begin(test), end(test), s);
+  std::cout << s << std::endl;
 }
 
 void StorageManager::drop_table(const std::string& name) {
-  // Implementation goes here
+  if (has_table(name)) {
+    _tables.erase(name);
+  } else {
+    throw std::runtime_error("Table does not exist");
+  }
 }
 
 std::shared_ptr<Table> StorageManager::get_table(const std::string& name) const {
-  // Implementation goes here
-  return nullptr;
+  if (has_table(name)) {
+    return _tables.find(name)->second;
+  } else {
+    throw std::runtime_error("Table does not exist");
+  }
 }
 
 bool StorageManager::has_table(const std::string& name) const {
-  // Implementation goes here
-  return false;
+  if (_tables.find(name) == _tables.end()) {
+    return false;
+  }
+  return true;
 }
 
 std::vector<std::string> StorageManager::table_names() const {
-  throw std::runtime_error("Implement StorageManager::table_names");
+  std::vector<std::string> keys;
+  for (auto k : _tables) {
+    keys.push_back(k.first);
+  }
+  return keys;
 }
 
 void StorageManager::print(std::ostream& out) const {
   // Implementation goes here
 }
 
-void StorageManager::reset() {
-  // Implementation goes here;
-}
+void StorageManager::reset() { _tables.clear(); }
 
 }  // namespace opossum

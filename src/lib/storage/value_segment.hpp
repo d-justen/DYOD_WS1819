@@ -13,6 +13,9 @@ namespace opossum {
 template <typename T>
 class ValueSegment : public BaseSegment {
  public:
+  // default constructor
+  ValueSegment() {}
+
   // return the value at a certain position. If you want to write efficient operators, back off!
   const AllTypeVariant operator[](const size_t offset) const override;
 
@@ -29,6 +32,7 @@ class ValueSegment : public BaseSegment {
 
  protected:
   // Implementation goes here
+  std::vector<T> _segment;
 };
 
 }  // namespace opossum
