@@ -15,32 +15,28 @@ StorageManager& StorageManager::get() {
   return storage_manager;
 }
 
-void StorageManager::add_table(const std::string& name, std::shared_ptr<Table> table) {
-  _tables[name] = table;
-  std::string s;
-  std::vector<std::string> test = table_names();
-  s = accumulate(begin(test), end(test), s);
-  std::cout << s << std::endl;
-}
+void StorageManager::add_table(const std::string& name, std::shared_ptr<Table> table) { _tables[name] = table; }
 
 void StorageManager::drop_table(const std::string& name) {
-  if (has_table(name)) {
-    _tables.erase(name);
+  auto t = _tables.find(name);
+  if (t != _tables.end()) {
+    _tables.erase(t);
   } else {
     throw std::runtime_error("Table does not exist");
   }
 }
 
 std::shared_ptr<Table> StorageManager::get_table(const std::string& name) const {
-  if (has_table(name)) {
-    return _tables.find(name)->second;
+  auto const t = _tables.find(name);
+  if (t != _tables.end()) {
+    return t->second;
   } else {
     throw std::runtime_error("Table does not exist");
   }
 }
 
 bool StorageManager::has_table(const std::string& name) const {
-  if (_tables.find(name) == _tables.end()) {
+  if (_tables.count(name) == 0) {
     return false;
   }
   return true;
@@ -48,14 +44,18 @@ bool StorageManager::has_table(const std::string& name) const {
 
 std::vector<std::string> StorageManager::table_names() const {
   std::vector<std::string> keys;
-  for (auto k : _tables) {
+  for (auto const& k : _tables) {
     keys.push_back(k.first);
   }
   return keys;
 }
 
 void StorageManager::print(std::ostream& out) const {
-  // Implementation goes here
+  std::string s;
+  std::vector<std::string> names = table_names();
+  s = std::accumulate(std::next(begin(names)), end(names), names[0],
+                      [](std::string a, std::string b) { return a + ", " + b; });
+  std::cout << s << std::endl;
 }
 
 void StorageManager::reset() { _tables.clear(); }
