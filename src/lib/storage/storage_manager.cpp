@@ -51,10 +51,9 @@ std::vector<std::string> StorageManager::table_names() const {
 }
 
 void StorageManager::print(std::ostream& out) const {
-  std::string s;
   std::vector<std::string> names = table_names();
-  s = std::accumulate(std::next(begin(names)), end(names), names[0],
-                      [](std::string a, std::string b) { return a + ", " + b; });
+  std::string s = std::accumulate(std::next(begin(names)), end(names), names[0],
+                                  [](std::string a, std::string b) { return a + ", " + b; });
   std::cout << s << std::endl;
 }
 

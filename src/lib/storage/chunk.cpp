@@ -27,9 +27,6 @@ std::shared_ptr<BaseSegment> Chunk::get_segment(ColumnID column_id) const { retu
 
 uint16_t Chunk::column_count() const { return _chunk.size(); }
 
-uint32_t Chunk::size() const {
-  // Implementation goes here
-  return column_count() <= 0 ? 0 : _chunk.at(0)->size();
-}
+uint32_t Chunk::size() const { return column_count() <= 0 ? 0 : _chunk.at(0)->size(); }
 
 }  // namespace opossum

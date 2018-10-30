@@ -22,16 +22,17 @@ Table::Table(const uint32_t chunk_size) : _chunk_size(chunk_size) { _chunks.push
 void Table::add_column(const std::string& name, const std::string& type) {
   _column_names.push_back(name);
   _types.push_back(type);
-  for (uint32_t i = 0; i < chunk_count(); ++i) {
-    _chunks.at(i)->add_segment(make_shared_by_data_type<BaseSegment, ValueSegment>(type));
+  for (uint32_t entry = 0; entry < chunk_count(); ++entry) {
+    _chunks.at(entry)->add_segment(make_shared_by_data_type<BaseSegment, ValueSegment>(type));
   }
 }
 
 void Table::append(std::vector<AllTypeVariant> values) {
   if (_chunks.at(chunk_count() - 1)->size() >= chunk_size()) {
     _chunks.push_back(std::make_shared<Chunk>());
-    for (uint32_t i = 0; i < _column_names.size(); ++i) {
-      _chunks.at(chunk_count() - 1)->add_segment(make_shared_by_data_type<BaseSegment, ValueSegment>(_types.at(i)));
+    for (uint32_t column = 0; column < _column_names.size(); ++column) {
+      _chunks.at(chunk_count() - 1)
+          ->add_segment(make_shared_by_data_type<BaseSegment, ValueSegment>(_types.at(column)));
     }
   }
   _chunks.at(chunk_count() - 1)->append(values);
@@ -44,13 +45,12 @@ uint64_t Table::row_count() const { return (chunk_count() - 1) * _chunk_size + _
 ChunkID Table::chunk_count() const { return ChunkID{_chunks.size()}; }
 
 ColumnID Table::column_id_by_name(const std::string& column_name) const {
-  for (int i = 0; i < column_count(); ++i) {
-    if (_column_names.at(i) == column_name) {
-      return ColumnID{i};
+  for (int column = 0; column < column_count(); ++column) {
+    if (_column_names.at(column) == column_name) {
+      return ColumnID{column};
     }
   }
-  throw std::exception();
-  return ColumnID{0};
+  throw std::runtime_error("Column not found");
 }
 
 uint32_t Table::chunk_size() const { return _chunk_size; }

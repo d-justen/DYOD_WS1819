@@ -27,7 +27,6 @@ void ValueSegment<T>::append(const AllTypeVariant& val) {
 
 template <typename T>
 size_t ValueSegment<T>::size() const {
-  // Implementation goes here
   return _segment.size();
 }
 
