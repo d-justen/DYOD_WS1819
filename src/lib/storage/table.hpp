@@ -68,7 +68,8 @@ class Table : private Noncopyable {
   uint32_t chunk_size() const;
 
   // adds a column to the end, i.e., right, of the table
-  // the added column should have the same length as existing columns (if any)
+  // this can only be done if the table does not yet have any entries, because we would otherwise have to deal
+  // with default values
   void add_column(const std::string& name, const std::string& type);
 
   // inserts a row at the end of the table
@@ -76,6 +77,9 @@ class Table : private Noncopyable {
   void append(std::vector<AllTypeVariant> values);
 
  protected:
-  // Implementation goes here
+  std::vector<std::shared_ptr<Chunk>> _chunks;
+  std::vector<std::string> _column_names;
+  std::vector<std::string> _types;
+  const uint32_t _chunk_size;
 };
 }  // namespace opossum

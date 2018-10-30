@@ -1,6 +1,7 @@
 #include "storage_manager.hpp"
 
 #include <memory>
+#include <numeric>
 #include <string>
 #include <utility>
 #include <vector>
@@ -10,38 +11,52 @@
 namespace opossum {
 
 StorageManager& StorageManager::get() {
-  return *(new StorageManager());
-  // A really hacky fix to get the tests to run - replace this with your implementation
+  static StorageManager storage_manager;
+  return storage_manager;
 }
 
-void StorageManager::add_table(const std::string& name, std::shared_ptr<Table> table) {
-  // Implementation goes here
-}
+void StorageManager::add_table(const std::string& name, std::shared_ptr<Table> table) { _tables[name] = table; }
 
 void StorageManager::drop_table(const std::string& name) {
-  // Implementation goes here
+  auto t = _tables.find(name);
+  if (t != _tables.end()) {
+    _tables.erase(t);
+  } else {
+    throw std::runtime_error("Table does not exist");
+  }
 }
 
 std::shared_ptr<Table> StorageManager::get_table(const std::string& name) const {
-  // Implementation goes here
-  return nullptr;
+  auto const t = _tables.find(name);
+  if (t != _tables.end()) {
+    return t->second;
+  } else {
+    throw std::runtime_error("Table does not exist");
+  }
 }
 
 bool StorageManager::has_table(const std::string& name) const {
-  // Implementation goes here
-  return false;
+  if (_tables.count(name) == 0) {
+    return false;
+  }
+  return true;
 }
 
 std::vector<std::string> StorageManager::table_names() const {
-  throw std::runtime_error("Implement StorageManager::table_names");
+  std::vector<std::string> keys;
+  for (auto const& k : _tables) {
+    keys.push_back(k.first);
+  }
+  return keys;
 }
 
 void StorageManager::print(std::ostream& out) const {
-  // Implementation goes here
+  std::vector<std::string> names = table_names();
+  std::string s = std::accumulate(std::next(begin(names)), end(names), names[0],
+                                  [](std::string a, std::string b) { return a + ", " + b; });
+  std::cout << s << std::endl;
 }
 
-void StorageManager::reset() {
-  // Implementation goes here;
-}
+void StorageManager::reset() { _tables.clear(); }
 
 }  // namespace opossum
