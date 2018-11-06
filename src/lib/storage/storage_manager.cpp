@@ -1,7 +1,6 @@
 #include "storage_manager.hpp"
 
 #include <memory>
-#include <numeric>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,24 +14,19 @@ StorageManager& StorageManager::get() {
   return storage_manager;
 }
 
-void StorageManager::add_table(const std::string& name, std::shared_ptr<Table> table) { _tables[name] = table; }
+void StorageManager::add_table(const std::string& name, std::shared_ptr<Table> table) { _tables[name] = table; print(std::cout);}
 
 void StorageManager::drop_table(const std::string& name) {
-  auto t = _tables.find(name);
-  if (t != _tables.end()) {
-    _tables.erase(t);
-  } else {
+  if (!_tables.erase(name)) {
     throw std::runtime_error("Table does not exist");
   }
 }
 
 std::shared_ptr<Table> StorageManager::get_table(const std::string& name) const {
-  auto const t = _tables.find(name);
-  if (t != _tables.end()) {
-    return t->second;
-  } else {
-    throw std::runtime_error("Table does not exist");
+  if (!has_table(name)) {
+  throw std::runtime_error("Table does not exist");
   }
+  return _tables.at(name);
 }
 
 bool StorageManager::has_table(const std::string& name) const {
@@ -44,17 +38,17 @@ bool StorageManager::has_table(const std::string& name) const {
 
 std::vector<std::string> StorageManager::table_names() const {
   std::vector<std::string> keys;
-  for (auto const& k : _tables) {
+  keys.reserve(_tables.size()); 
+  for (const auto& k : _tables) {
     keys.push_back(k.first);
   }
   return keys;
 }
 
 void StorageManager::print(std::ostream& out) const {
-  std::vector<std::string> names = table_names();
-  std::string s = std::accumulate(std::next(begin(names)), end(names), names[0],
-                                  [](std::string a, std::string b) { return a + ", " + b; });
-  std::cout << s << std::endl;
+  for(const auto& table : _tables) {
+    out << table.first << ", columns: " << table.second->column_count() << ", rows: " << table.second->row_count() << ", chunks: " << table.second->chunk_count() << std::endl;
+  }
 }
 
 void StorageManager::reset() { _tables.clear(); }
