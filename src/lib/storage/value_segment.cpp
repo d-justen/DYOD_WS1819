@@ -17,22 +17,22 @@ namespace opossum {
 template <typename T>
 const AllTypeVariant ValueSegment<T>::operator[](const size_t offset) const {
   PerformanceWarning("operator[] used");
-  return _segment.at(offset);
+  return _values[offset];
 }
 
 template <typename T>
 void ValueSegment<T>::append(const AllTypeVariant& val) {
-  _segment.push_back(type_cast<T>(val));
+  _values.push_back(type_cast<T>(val));
 }
 
 template <typename T>
 size_t ValueSegment<T>::size() const {
-  return _segment.size();
+  return _values.size();
 }
 
 template <typename T>
 const std::vector<T>& ValueSegment<T>::values() const {
-  return _segment;
+  return _values;
 }
 
 EXPLICITLY_INSTANTIATE_DATA_TYPES(ValueSegment);
