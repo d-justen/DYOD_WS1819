@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "all_type_variant.hpp"
-#include "base_attribute_vector.hpp"
+#include "fitted_attribute_vector.hpp"
 #include "type_cast.hpp"
 #include "types.hpp"
 
@@ -29,7 +29,7 @@ class DictionarySegment : public BaseSegment {
    * Creates a Dictionary segment from a given value segment.
    */
   explicit DictionarySegment(const std::shared_ptr<BaseSegment>& base_segment)
-      : _dictionary(std::make_shared<std::vector<T>>()), _attribute_vector(std::make_shared<std::vector<uint64_t>>()) {
+      : _dictionary(std::make_shared<std::vector<T>>()) {
     for (size_t index = 0; index < base_segment->size(); ++index) {
       const auto& value = type_cast<T>((*base_segment)[index]);
       auto position = std::find(_dictionary->begin(), _dictionary->end(), value);
@@ -38,12 +38,22 @@ class DictionarySegment : public BaseSegment {
       }
     }
 
+    if (_dictionary->size() < std::numeric_limits<uint8_t>::max()) {
+      _attribute_vector = std::make_shared<FittedAttributeVector<uint8_t>>(base_segment->size());
+    } else if (_dictionary->size() < std::numeric_limits<uint16_t>::max()) {
+      _attribute_vector = std::make_shared<FittedAttributeVector<uint16_t>>(base_segment->size());
+    } else if (_dictionary->size() < std::numeric_limits<uint32_t>::max()) {
+      _attribute_vector = std::make_shared<FittedAttributeVector<uint32_t>>(base_segment->size());
+    } else {
+      _attribute_vector = std::make_shared<FittedAttributeVector<uint64_t>>(base_segment->size());
+    }
+
     std::sort(_dictionary->begin(), _dictionary->end());
 
     for (size_t index = 0; index < base_segment->size(); ++index) {
       for (size_t index_dict = 0; index_dict < _dictionary->size(); ++index_dict) {
         if ((*_dictionary)[index_dict] == type_cast<T>((*base_segment)[index])) {
-          _attribute_vector->push_back(index_dict);
+          _attribute_vector->set(index, ValueID(index_dict));
           break;
         }
       }
@@ -57,7 +67,7 @@ class DictionarySegment : public BaseSegment {
   const AllTypeVariant operator[](const size_t i) const override { return get(i); }
 
   // return the value at a certain position.
-  const T get(const size_t i) const { return (*_dictionary)[(*_attribute_vector)[i]]; }
+  const T get(const size_t i) const { return (*_dictionary)[_attribute_vector->get(i)]; }
 
   // dictionary segments are immutable
   void append(const AllTypeVariant&) override { throw std::runtime_error("Dictionary segments are immutable"); }
@@ -99,7 +109,7 @@ class DictionarySegment : public BaseSegment {
 
  protected:
   std::shared_ptr<std::vector<T>> _dictionary;
-  std::shared_ptr<std::vector<uint64_t>> _attribute_vector;
+  std::shared_ptr<BaseAttributeVector> _attribute_vector;
 };
 
 }  // namespace opossum
