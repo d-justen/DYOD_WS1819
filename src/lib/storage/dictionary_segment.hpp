@@ -30,7 +30,6 @@ class DictionarySegment : public BaseSegment {
    */
   explicit DictionarySegment(const std::shared_ptr<BaseSegment>& base_segment)
       : _dictionary(std::make_shared<std::vector<T>>()), _attribute_vector(std::make_shared<std::vector<uint64_t>>()) {
-        
     for (size_t index = 0; index < base_segment->size(); ++index) {
       const auto& value = type_cast<T>((*base_segment)[index]);
       auto position = std::find(_dictionary->begin(), _dictionary->end(), value);

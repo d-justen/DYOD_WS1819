@@ -15,8 +15,7 @@ StorageManager& StorageManager::get() {
   return storage_manager;
 }
 
-void StorageManager::add_table(const std::string& name, std::shared_ptr<Table> table) { _tables[name] = table; 
-  }
+void StorageManager::add_table(const std::string& name, std::shared_ptr<Table> table) { _tables[name] = table; }
 
 void StorageManager::drop_table(const std::string& name) {
   if (!_tables.erase(name)) {
