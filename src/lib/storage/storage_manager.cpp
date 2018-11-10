@@ -15,7 +15,8 @@ StorageManager& StorageManager::get() {
   return storage_manager;
 }
 
-void StorageManager::add_table(const std::string& name, std::shared_ptr<Table> table) { _tables[name] = table; print(std::cout);}
+void StorageManager::add_table(const std::string& name, std::shared_ptr<Table> table) { _tables[name] = table; 
+  }
 
 void StorageManager::drop_table(const std::string& name) {
   if (!_tables.erase(name)) {
@@ -25,7 +26,7 @@ void StorageManager::drop_table(const std::string& name) {
 
 std::shared_ptr<Table> StorageManager::get_table(const std::string& name) const {
   if (!has_table(name)) {
-  throw std::runtime_error("Table does not exist");
+    throw std::runtime_error("Table does not exist");
   }
   return _tables.at(name);
 }
@@ -39,7 +40,7 @@ bool StorageManager::has_table(const std::string& name) const {
 
 std::vector<std::string> StorageManager::table_names() const {
   std::vector<std::string> keys;
-  keys.reserve(_tables.size()); 
+  keys.reserve(_tables.size());
   for (const auto& k : _tables) {
     keys.push_back(k.first);
   }
@@ -47,8 +48,9 @@ std::vector<std::string> StorageManager::table_names() const {
 }
 
 void StorageManager::print(std::ostream& out) const {
-  for(const auto& table : _tables) {
-    out << table.first << ", columns: " << table.second->column_count() << ", rows: " << table.second->row_count() << ", chunks: " << table.second->chunk_count() << std::endl;
+  for (const auto& table : _tables) {
+    out << table.first << ", columns: " << table.second->column_count() << ", rows: " << table.second->row_count()
+        << ", chunks: " << table.second->chunk_count() << std::endl;
   }
 }
 
