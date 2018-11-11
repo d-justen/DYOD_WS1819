@@ -65,6 +65,9 @@ Chunk& Table::get_chunk(ChunkID chunk_id) { return *_chunks[chunk_id]; }
 const Chunk& Table::get_chunk(ChunkID chunk_id) const { return *_chunks[chunk_id]; }
 
 void Table::compress_chunk(ChunkID chunk_id) {
+  static std::mutex mutex;
+  std::lock_guard<std::mutex> lock(mutex);
+  
   auto new_chunk = std::make_shared<Chunk>();
   for (size_t index = 0; index < _chunks[chunk_id]->column_count(); ++index) {
     new_chunk->add_segment(make_shared_by_data_type<BaseSegment, DictionarySegment>(
