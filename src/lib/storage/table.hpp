@@ -10,6 +10,7 @@
 
 #include "base_segment.hpp"
 #include "chunk.hpp"
+#include "dictionary_segment.hpp"
 
 #include "type_cast.hpp"
 #include "types.hpp"
