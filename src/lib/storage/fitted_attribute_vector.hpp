@@ -23,7 +23,9 @@ class FittedAttributeVector : public BaseAttributeVector {
   size_t size() const override { return _values->size(); }
 
   // returns the width of biggest value id in bytes
-  AttributeVectorWidth width() const override { return *std::max(_values->cbegin(), _values->cend()); }
+  AttributeVectorWidth width() const override { 
+    return static_cast<AttributeVectorWidth>(sizeof(*std::max(_values->cbegin(), _values->cend()))); 
+  }
 
  protected:
   std::shared_ptr<std::vector<T>> _values;
