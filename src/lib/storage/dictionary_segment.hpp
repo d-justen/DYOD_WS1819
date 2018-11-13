@@ -31,9 +31,9 @@ class DictionarySegment : public BaseSegment {
    */
   explicit DictionarySegment(const std::shared_ptr<BaseSegment>& base_segment)
       : _dictionary(std::make_shared<std::vector<T>>()) {
-    std::set<T> temp_dic(std::dynamic_pointer_cast<ValueSegment<T>>(base_segment)->values().begin(),
-                         std::dynamic_pointer_cast<ValueSegment<T>>(base_segment)->values().end());
-    _dictionary->assign(temp_dic.begin(), temp_dic.end());
+    std::set<T> temp_dic(std::dynamic_pointer_cast<ValueSegment<T>>(base_segment)->values().cbegin(),
+                         std::dynamic_pointer_cast<ValueSegment<T>>(base_segment)->values().cend());
+    _dictionary->assign(temp_dic.cbegin(), temp_dic.cend());
 
     if (_dictionary->size() < std::numeric_limits<uint8_t>::max()) {
       _attribute_vector = std::make_shared<FittedAttributeVector<uint8_t>>(base_segment->size());
