@@ -55,20 +55,16 @@ TEST_F(StorageDictionarySegmentTest, LowerUpperBound) {
 }
 
 TEST_F(StorageDictionarySegmentTest, FittedAttributeVector8) {
-  for (u_int8_t i = 0; i < std::numeric_limits<uint8_t>::max(); i++) vc_str->append(std::to_string(i));
-  auto col = opossum::make_shared_by_data_type<opossum::BaseSegment, opossum::DictionarySegment>("string", vc_int);
+  for (u_int8_t i = 0; i < std::numeric_limits<uint8_t>::max(); i++) vc_int->append(std::to_string(i));
+  auto col = opossum::make_shared_by_data_type<opossum::BaseSegment, opossum::DictionarySegment>("string", vc_str);
   auto dict_col = std::dynamic_pointer_cast<opossum::DictionarySegment<std::string>>(col);
 }
 
 TEST_F(StorageDictionarySegmentTest, FittedAttributeVector16) {
-  for (u_int16_t i = 0; i < std::numeric_limits<uint16_t>::max(); i++) vc_str->append(std::to_string(i));
-  auto col = opossum::make_shared_by_data_type<opossum::BaseSegment, opossum::DictionarySegment>("string", vc_int);
-  auto dict_col = std::dynamic_pointer_cast<opossum::DictionarySegment<std::string>>(col);
-}
-
-TEST_F(StorageDictionarySegmentTest, FittedAttributeVector32) {
-  for (u_int32_t i = 0; i < static_cast<uint32_t>(std::numeric_limits<uint16_t>::max()) + 1; i++) vc_str->append(std::to_string(i));
-  auto col = opossum::make_shared_by_data_type<opossum::BaseSegment, opossum::DictionarySegment>("string", vc_int);
+  for (u_int16_t i = 0; i < static_cast<uint16_t>(std::numeric_limits<uint8_t>::max()) + 1; i++) {
+    vc_str->append(std::to_string(i));
+  }
+  auto col = opossum::make_shared_by_data_type<opossum::BaseSegment, opossum::DictionarySegment>("string", vc_str);
   auto dict_col = std::dynamic_pointer_cast<opossum::DictionarySegment<std::string>>(col);
 }
 
@@ -78,6 +74,6 @@ TEST_F(StorageDictionarySegmentTest, FittedAttributeVectorDuplicates) {
     vc_str->append(std::to_string(i));
   }
   //Expect FittedAttributeVector to still have uint8_t values after deduplication in ctor
-  auto col = opossum::make_shared_by_data_type<opossum::BaseSegment, opossum::DictionarySegment>("string", vc_int);
+  auto col = opossum::make_shared_by_data_type<opossum::BaseSegment, opossum::DictionarySegment>("string", vc_str);
   auto dict_col = std::dynamic_pointer_cast<opossum::DictionarySegment<std::string>>(col);
 }
