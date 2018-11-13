@@ -11,6 +11,7 @@
 #include "fitted_attribute_vector.hpp"
 #include "type_cast.hpp"
 #include "types.hpp"
+#include "value_segment.hpp"
 
 namespace opossum {
 
@@ -30,13 +31,9 @@ class DictionarySegment : public BaseSegment {
    */
   explicit DictionarySegment(const std::shared_ptr<BaseSegment>& base_segment)
       : _dictionary(std::make_shared<std::vector<T>>()) {
-    for (size_t index = 0; index < base_segment->size(); ++index) {
-      const auto& value = type_cast<T>((*base_segment)[index]);
-      auto position = std::find(_dictionary->begin(), _dictionary->end(), value);
-      if (position == _dictionary->cend()) {
-        _dictionary->push_back(value);
-      }
-    }
+    std::set<T> temp_dic(std::dynamic_pointer_cast<ValueSegment<T>>(base_segment)->values().begin(),
+                         std::dynamic_pointer_cast<ValueSegment<T>>(base_segment)->values().end());
+    _dictionary->assign(temp_dic.begin(), temp_dic.end());
 
     if (_dictionary->size() < std::numeric_limits<uint8_t>::max()) {
       _attribute_vector = std::make_shared<FittedAttributeVector<uint8_t>>(base_segment->size());
