@@ -16,7 +16,7 @@ class StorageFittedAttributeVectorTest : public ::testing::Test {
   fav->set(3, ValueID{2});
   }
 
-  std::shared_ptr<opossum::FittedAttributeVector<uint8_t>> fav = std::make_shared<opossum::FittedAttributeVector<std::uint8_t>>(4);
+  std::shared_ptr<opossum::FittedAttributeVector<uint16_t>> fav = std::make_shared<opossum::FittedAttributeVector<std::uint16_t>>(4);
 };
 
 TEST_F(StorageFittedAttributeVectorTest, GetSet) {
@@ -31,7 +31,7 @@ TEST_F(StorageFittedAttributeVectorTest, Size) {
 }
 
 TEST_F(StorageFittedAttributeVectorTest, Width) {
-    EXPECT_EQ(fav->width(), 1u);
+    EXPECT_EQ(fav->width(), 2u);
 }
 
 } // namespace opossum

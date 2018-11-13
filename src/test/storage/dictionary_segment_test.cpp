@@ -58,6 +58,8 @@ TEST_F(StorageDictionarySegmentTest, FittedAttributeVector8) {
   for (u_int8_t i = 0; i < std::numeric_limits<uint8_t>::max(); i++) vc_int->append(std::to_string(i));
   auto col = opossum::make_shared_by_data_type<opossum::BaseSegment, opossum::DictionarySegment>("string", vc_str);
   auto dict_col = std::dynamic_pointer_cast<opossum::DictionarySegment<std::string>>(col);
+
+  EXPECT_EQ(dict_col->attribute_vector()->width(), 1);
 }
 
 TEST_F(StorageDictionarySegmentTest, FittedAttributeVector16) {
@@ -66,14 +68,18 @@ TEST_F(StorageDictionarySegmentTest, FittedAttributeVector16) {
   }
   auto col = opossum::make_shared_by_data_type<opossum::BaseSegment, opossum::DictionarySegment>("string", vc_str);
   auto dict_col = std::dynamic_pointer_cast<opossum::DictionarySegment<std::string>>(col);
+
+  EXPECT_EQ(dict_col->attribute_vector()->width(), 2);
 }
 
 TEST_F(StorageDictionarySegmentTest, FittedAttributeVectorDuplicates) {
-  for (size_t i = 0; i < std::numeric_limits<uint8_t>::max(); i++) {
+  for (size_t i = 0; i < std::numeric_limits<uint8_t>::max() - 1; i++) {
     vc_str->append(std::to_string(i));
     vc_str->append(std::to_string(i));
   }
   //Expect FittedAttributeVector to still have uint8_t values after deduplication in ctor
   auto col = opossum::make_shared_by_data_type<opossum::BaseSegment, opossum::DictionarySegment>("string", vc_str);
   auto dict_col = std::dynamic_pointer_cast<opossum::DictionarySegment<std::string>>(col);
+
+  EXPECT_EQ(dict_col->attribute_vector()->width(), 1);
 }
