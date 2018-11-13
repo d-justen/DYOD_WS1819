@@ -14,7 +14,7 @@ class FittedAttributeVector : public BaseAttributeVector {
   virtual ~FittedAttributeVector() = default;
 
   // returns the value id at a given position
-  ValueID get(const size_t i) const override { return ValueID((*_values)[i]); }
+  ValueID get(const size_t i) const override { return ValueID{(*_values)[i]}; }
 
   // sets the value id at a given position
   void set(const size_t i, const ValueID value_id) override { (*_values)[i] = value_id; }
@@ -23,7 +23,7 @@ class FittedAttributeVector : public BaseAttributeVector {
   size_t size() const override { return _values->size(); }
 
   // returns the width of biggest value id in bytes
-  AttributeVectorWidth width() const override { return *std::max(_values->cbegin(), _values->cend()); }
+  AttributeVectorWidth width() const override { return AttributeVectorWidth(sizeof(*std::max(_values->cbegin(), _values->cend()))); }
 
  protected:
   std::shared_ptr<std::vector<T>> _values;

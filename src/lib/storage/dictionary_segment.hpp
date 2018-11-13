@@ -50,7 +50,7 @@ class DictionarySegment : public BaseSegment {
     for (size_t index = 0; index < base_segment->size(); ++index) {
       for (size_t index_dict = 0; index_dict < _dictionary->size(); ++index_dict) {
         if ((*_dictionary)[index_dict] == type_cast<T>((*base_segment)[index])) {
-          _attribute_vector->set(index, ValueID(index_dict));
+          _attribute_vector->set(index, ValueID{index_dict});
           break;
         }
       }
@@ -82,7 +82,7 @@ class DictionarySegment : public BaseSegment {
   // returns INVALID_VALUE_ID if all values are smaller than the search value
   ValueID lower_bound(T value) const {
     const auto& low = std::lower_bound(_dictionary->cbegin(), _dictionary->cend(), value);
-    return (low == _dictionary->cend()) ? INVALID_VALUE_ID : ValueID(std::distance(_dictionary->cbegin(), low));
+    return (low == _dictionary->cend()) ? INVALID_VALUE_ID : ValueID{std::distance(_dictionary->cbegin(), low)};
   }
 
   // same as lower_bound(T), but accepts an AllTypeVariant
@@ -92,7 +92,7 @@ class DictionarySegment : public BaseSegment {
   // returns INVALID_VALUE_ID if all values are smaller than or equal to the search value
   ValueID upper_bound(T value) const {
     const auto& up = std::upper_bound(_dictionary->cbegin(), _dictionary->cend(), value);
-    return (up == _dictionary->cend()) ? INVALID_VALUE_ID : ValueID(std::distance(_dictionary->cbegin(), up));
+    return (up == _dictionary->cend()) ? INVALID_VALUE_ID : ValueID{std::distance(_dictionary->cbegin(), up)};
   }
 
   // same as upper_bound(T), but accepts an AllTypeVariant
