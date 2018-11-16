@@ -16,7 +16,8 @@ class StorageFittedAttributeVectorTest : public ::testing::Test {
   fav->set(3, ValueID{2});
   }
 
-  std::shared_ptr<opossum::FittedAttributeVector<uint16_t>> fav = std::make_shared<opossum::FittedAttributeVector<std::uint16_t>>(4);
+  std::shared_ptr<opossum::FittedAttributeVector<uint16_t>> fav = 
+  std::make_shared<opossum::FittedAttributeVector<std::uint16_t>>(4);
 };
 
 TEST_F(StorageFittedAttributeVectorTest, GetSet) {
