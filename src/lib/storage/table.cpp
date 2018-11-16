@@ -19,6 +19,10 @@ namespace opossum {
 
 Table::Table(const uint32_t chunk_size) : _chunks{std::make_shared<Chunk>()}, _chunk_size(chunk_size) {}
 
+void Table::add_column_definition(const std::string& name, const std::string& type) {
+  // Implementation goes here
+}
+
 void Table::add_column(const std::string& name, const std::string& type) {
   _column_names.push_back(name);
   _types.push_back(type);
@@ -38,6 +42,10 @@ void Table::append(std::vector<AllTypeVariant> values) {
 }
 
 uint16_t Table::column_count() const { return _chunks[0]->column_count(); }
+
+void Table::create_new_chunk() {
+  // Implementation goes here
+}
 
 uint64_t Table::row_count() const { return (chunk_count() - 1) * _chunk_size + _chunks.back()->size(); }
 
@@ -74,6 +82,10 @@ void Table::compress_chunk(ChunkID chunk_id) {
         column_type(ColumnID{index}), _chunks[chunk_id]->get_segment(ColumnID{index})));
   }
   _chunks[chunk_id] = new_chunk;
+}
+
+void emplace_chunk(Chunk chunk) {
+  // Implementation goes here
 }
 
 }  // namespace opossum
