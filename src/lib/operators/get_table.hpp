@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "abstract_operator.hpp"
+#include "../storage/storage_manager.hpp"
 
 namespace opossum {
 
@@ -17,5 +18,7 @@ class GetTable : public AbstractOperator {
 
  protected:
   std::shared_ptr<const Table> _on_execute() override;
+
+  std::string _table_name;
 };
 }  // namespace opossum
