@@ -7,9 +7,10 @@ ReferenceSegment::ReferenceSegment(const std::shared_ptr<const Table> referenced
     : _table(referenced_table), _column_id(referenced_column_id), _pos_list(pos) {}
 
 const AllTypeVariant ReferenceSegment::operator[](const size_t i) const {
-  RowID rowID = (*_pos_list)[i];
-  std::shared_ptr<BaseSegment> referencedSegment = _table->get_chunk(rowID.chunk_id).get_segment(_column_id);
-  return (*referencedSegment)[rowID.chunk_offset];
+  DebugAssert(i < _pos_list->size(), "Index out of range.");
+  const auto row_id = (*_pos_list)[i];
+  const auto& referenced_segment = _table->get_chunk(row_id.chunk_id).get_segment(_column_id);
+  return (*referenced_segment)[row_id.chunk_offset];
 }
 
 size_t ReferenceSegment::size() const { return _pos_list->size(); }
