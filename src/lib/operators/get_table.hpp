@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "abstract_operator.hpp"
 #include "../storage/storage_manager.hpp"
+#include "abstract_operator.hpp"
 
 namespace opossum {
 
