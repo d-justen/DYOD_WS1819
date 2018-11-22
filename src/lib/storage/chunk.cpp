@@ -19,7 +19,7 @@ void Chunk::add_segment(std::shared_ptr<BaseSegment> segment) { _segments.push_b
 void Chunk::append(const std::vector<AllTypeVariant>& values) {
   DebugAssert(values.size() == column_count(), "Wrong number of entries");
     std::vector<std::shared_ptr<BaseSegment>>::iterator segment_iter = _segments.begin();
-    for(const auto& value : values) {
+    for (const auto& value : values) {
       (*segment_iter++)->append(value);
     }
 }

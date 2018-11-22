@@ -1,3 +1,4 @@
+#include <limits>
 #include <memory>
 #include <string>
 
@@ -89,7 +90,7 @@ TEST_F(StorageDictionarySegmentTest, FittedAttributeVectorDuplicates) {
     vc_str->append(std::to_string(i));
     vc_str->append(std::to_string(i));
   }
-  //Expect FittedAttributeVector to still have uint8_t values after deduplication in ctor
+  // Expect FittedAttributeVector to still have uint8_t values after deduplication in ctor
   auto col = opossum::make_shared_by_data_type<opossum::BaseSegment, opossum::DictionarySegment>("string", vc_str);
   auto dict_col = std::dynamic_pointer_cast<opossum::DictionarySegment<std::string>>(col);
 

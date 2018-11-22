@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -10,7 +11,7 @@ namespace opossum {
 template <class T>
 class FittedAttributeVector : public BaseAttributeVector {
  public:
-  FittedAttributeVector(size_t size) : _values(std::make_shared<std::vector<T>>(size)) {}
+  explicit FittedAttributeVector(const size_t size) : _values(std::make_shared<std::vector<T>>(size)) {}
   virtual ~FittedAttributeVector() = default;
 
   // returns the value id at a given position

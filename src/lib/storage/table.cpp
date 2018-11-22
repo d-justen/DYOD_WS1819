@@ -32,7 +32,7 @@ void Table::add_column(const std::string& name, const std::string& type) {
 }
 
 void Table::append(std::vector<AllTypeVariant> values) {
-  if (_chunks.back()->size() >= chunk_size()) {
+  if (_chunks.back()->size() == chunk_size()) {
     _chunks.push_back(std::make_shared<Chunk>());
     for (const auto& type : _types) {
       _chunks.back()->add_segment(make_shared_by_data_type<BaseSegment, ValueSegment>(type));
@@ -47,7 +47,13 @@ void Table::create_new_chunk() {
   // Implementation goes here
 }
 
-uint64_t Table::row_count() const { return (chunk_count() - 1) * _chunk_size + _chunks.back()->size(); }
+uint64_t Table::row_count() const {
+  uint64_t rows = 0;
+  for (const auto& chunk : _chunks) {
+    rows += chunk->size();
+  }
+  return rows;
+}
 
 ChunkID Table::chunk_count() const { return ChunkID{_chunks.size()}; }
 
@@ -77,9 +83,9 @@ void Table::compress_chunk(ChunkID chunk_id) {
   std::lock_guard<std::mutex> lock(mutex);
 
   auto new_chunk = std::make_shared<Chunk>();
-  for (size_t index = 0; index < _chunks[chunk_id]->column_count(); ++index) {
+  for (ColumnID index = ColumnID{0}; index < _chunks[chunk_id]->column_count(); ++index) {
     new_chunk->add_segment(make_shared_by_data_type<BaseSegment, DictionarySegment>(
-        column_type(ColumnID{index}), _chunks[chunk_id]->get_segment(ColumnID{index})));
+        column_type(index), _chunks[chunk_id]->get_segment(index)));
   }
   _chunks[chunk_id] = new_chunk;
 }

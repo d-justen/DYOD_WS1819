@@ -40,8 +40,8 @@ bool StorageManager::has_table(const std::string& name) const {
 std::vector<std::string> StorageManager::table_names() const {
   std::vector<std::string> keys;
   keys.reserve(_tables.size());
-  for (const auto& k : _tables) {
-    keys.push_back(k.first);
+  for (const auto& table : _tables) {
+    keys.push_back(table.first);
   }
   return keys;
 }
