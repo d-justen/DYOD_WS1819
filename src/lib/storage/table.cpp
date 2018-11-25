@@ -20,7 +20,8 @@ namespace opossum {
 Table::Table(const uint32_t chunk_size) : _chunks{std::make_shared<Chunk>()}, _chunk_size(chunk_size) {}
 
 void Table::add_column_definition(const std::string& name, const std::string& type) {
-  // Implementation goes here
+  _column_names.emplace_back(name);
+  _types.emplace_back(type);
 }
 
 void Table::add_column(const std::string& name, const std::string& type) {
@@ -32,7 +33,7 @@ void Table::add_column(const std::string& name, const std::string& type) {
 }
 
 void Table::append(std::vector<AllTypeVariant> values) {
-  if (_chunks.back()->size() >= chunk_size()) {
+  if (_chunks.back()->size() == chunk_size()) {
     _chunks.push_back(std::make_shared<Chunk>());
     for (const auto& type : _types) {
       _chunks.back()->add_segment(make_shared_by_data_type<BaseSegment, ValueSegment>(type));
