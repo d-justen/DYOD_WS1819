@@ -12,6 +12,7 @@
 #include "all_type_variant.hpp"
 #include "utils/assert.hpp"
 
+#include "operators/table_scan.hpp"
 #include "storage/value_segment.hpp"
 
 namespace opossum {

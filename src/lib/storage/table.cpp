@@ -20,7 +20,8 @@ namespace opossum {
 Table::Table(const uint32_t chunk_size) : _chunks{std::make_shared<Chunk>()}, _chunk_size(chunk_size) {}
 
 void Table::add_column_definition(const std::string& name, const std::string& type) {
-  // Implementation goes here
+  _column_names.emplace_back(name);
+  _types.emplace_back(type);
 }
 
 void Table::add_column(const std::string& name, const std::string& type) {
