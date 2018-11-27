@@ -1,8 +1,10 @@
 #pragma once
 
+#include <algorithm>
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -31,15 +33,17 @@ class DictionarySegment : public BaseSegment {
    */
   explicit DictionarySegment(const std::shared_ptr<BaseSegment>& base_segment)
       : _dictionary(std::make_shared<std::vector<T>>()) {
-    std::set<T> temp_dic(std::dynamic_pointer_cast<ValueSegment<T>>(base_segment)->values().begin(),
-                         std::dynamic_pointer_cast<ValueSegment<T>>(base_segment)->values().end());
-    _dictionary->assign(temp_dic.begin(), temp_dic.end());
+    const auto& value_segment = std::dynamic_pointer_cast<ValueSegment<T>>(base_segment);
 
-    if (_dictionary->size() < std::numeric_limits<uint8_t>::max()) {
+    // Remove duplicates using a set
+    std::set<T> deduplicated_set(value_segment->values().cbegin(), value_segment->values().cend());
+    _dictionary->assign(deduplicated_set.cbegin(), deduplicated_set.cend());
+
+    if (_dictionary->size() <= std::numeric_limits<uint8_t>::max()) {
       _attribute_vector = std::make_shared<FittedAttributeVector<uint8_t>>(base_segment->size());
-    } else if (_dictionary->size() < std::numeric_limits<uint16_t>::max()) {
+    } else if (_dictionary->size() <= std::numeric_limits<uint16_t>::max()) {
       _attribute_vector = std::make_shared<FittedAttributeVector<uint16_t>>(base_segment->size());
-    } else if (_dictionary->size() < std::numeric_limits<uint32_t>::max()) {
+    } else if (_dictionary->size() <= std::numeric_limits<uint32_t>::max()) {
       _attribute_vector = std::make_shared<FittedAttributeVector<uint32_t>>(base_segment->size());
     } else {
       _attribute_vector = std::make_shared<FittedAttributeVector<uint64_t>>(base_segment->size());
@@ -47,16 +51,16 @@ class DictionarySegment : public BaseSegment {
 
     std::sort(_dictionary->begin(), _dictionary->end());
 
-    for (size_t index = 0; index < base_segment->size(); ++index) {
-      for (size_t index_dict = 0; index_dict < _dictionary->size(); ++index_dict) {
-        if ((*_dictionary)[index_dict] == type_cast<T>((*base_segment)[index])) {
-          _attribute_vector->set(index, ValueID(index_dict));
-          break;
-        }
+    // Insert references to dict into attribute vector
+    for (size_t segment_idx = 0; segment_idx < base_segment->size(); ++segment_idx) {
+      const auto& dict_it =
+          std::lower_bound(_dictionary->cbegin(), _dictionary->cend(), type_cast<T>((*value_segment)[segment_idx]));
+
+      if (dict_it != _dictionary->cend()) {
+        _attribute_vector->set(segment_idx, ValueID{dict_it - _dictionary->cbegin()});
       }
     }
   }
-
   // SEMINAR INFORMATION: Since most of these methods depend on the template parameter, you will have to implement
   // the DictionarySegment in this file. Replace the method signatures with actual implementations.
 
@@ -82,7 +86,7 @@ class DictionarySegment : public BaseSegment {
   // returns INVALID_VALUE_ID if all values are smaller than the search value
   ValueID lower_bound(T value) const {
     const auto& low = std::lower_bound(_dictionary->cbegin(), _dictionary->cend(), value);
-    return (low == _dictionary->cend()) ? INVALID_VALUE_ID : ValueID(std::distance(_dictionary->cbegin(), low));
+    return (low == _dictionary->cend()) ? INVALID_VALUE_ID : ValueID{std::distance(_dictionary->cbegin(), low)};
   }
 
   // same as lower_bound(T), but accepts an AllTypeVariant
@@ -92,7 +96,7 @@ class DictionarySegment : public BaseSegment {
   // returns INVALID_VALUE_ID if all values are smaller than or equal to the search value
   ValueID upper_bound(T value) const {
     const auto& up = std::upper_bound(_dictionary->cbegin(), _dictionary->cend(), value);
-    return (up == _dictionary->cend()) ? INVALID_VALUE_ID : ValueID(std::distance(_dictionary->cbegin(), up));
+    return (up == _dictionary->cend()) ? INVALID_VALUE_ID : ValueID{std::distance(_dictionary->cbegin(), up)};
   }
 
   // same as upper_bound(T), but accepts an AllTypeVariant
